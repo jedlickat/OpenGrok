@@ -235,6 +235,8 @@ Copyright (c) 2005, 2017, Oracle and/or its affiliates. All rights reserved.
         <run-jflex dir="${gen.analysis.dir}/c" name="CXref"/>
         <run-jflex dir="${gen.analysis.dir}/c" name="CxxSymbolTokenizer"/>
         <run-jflex dir="${gen.analysis.dir}/c" name="CxxXref"/>
+        <run-jflex dir="${gen.analysis.dir}/dtrace" name="DTraceSymbolTokenizer"/>
+        <run-jflex dir="${gen.analysis.dir}/dtrace" name="DTraceXref"/>
         <run-jflex dir="${gen.analysis.dir}/erlang" name="ErlangSymbolTokenizer"/>
         <run-jflex dir="${gen.analysis.dir}/erlang" name="ErlangXref"/>
         <run-jflex dir="${gen.analysis.dir}/fortran" name="FortranSymbolTokenizer"/>

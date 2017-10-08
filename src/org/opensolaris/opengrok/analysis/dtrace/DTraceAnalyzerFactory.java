@@ -17,11 +17,10 @@
  * CDDL HEADER END
  */
 
-/*
- * Copyright (c) 2007, 2015, Oracle and/or its affiliates. All rights reserved.
+ /*
+ * Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
  */
-
-package org.opensolaris.opengrok.analysis.c;
+package org.opensolaris.opengrok.analysis.dtrace;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -33,35 +32,30 @@ import org.opensolaris.opengrok.analysis.FileAnalyzerFactory;
 import org.opensolaris.opengrok.configuration.Project;
 import org.opensolaris.opengrok.history.Annotation;
 
-public class CAnalyzerFactory extends FileAnalyzerFactory {
+public class DTraceAnalyzerFactory extends FileAnalyzerFactory {
     
-    private static final String name = "C";
+    private static final String NAME = "DTrace";
     
     private static final String[] SUFFIXES = {
-        "C",
-        "H",
-        "I",
-        "L",
-        "Y",
-        "LEX",
-        "YACC",
-        "S",
-        "XS",                   // Mainly found in perl directories
-        "X",                    // rpcgen input files
+        "D",
     };
-
-    public CAnalyzerFactory() {
-        super(null, null, SUFFIXES, null, null, "text/plain", Genre.PLAIN, name);
+    
+    private static final String[] MAGICS = {
+        "#!/usr/sbin/dtrace",
+    };
+    
+    public DTraceAnalyzerFactory() {
+        super(null, null, SUFFIXES, MAGICS, null, "text/plain", Genre.PLAIN, NAME);
     }
-
+    
     @Override
     protected FileAnalyzer newAnalyzer() {
-        return new CAnalyzer(this);
+        return new DTraceAnalyzer(this);
     }
 
     @Override
     public void writeXref(Reader in, Writer out, Definitions defs, Annotation annotation, Project project)
         throws IOException {
-        CAnalyzer.writeXref(in, out, defs, annotation, project);
+        DTraceAnalyzer.writeXref(in, out, defs, annotation, project);
     }
 }

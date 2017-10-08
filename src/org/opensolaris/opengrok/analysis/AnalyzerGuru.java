@@ -79,6 +79,7 @@ import org.opensolaris.opengrok.analysis.python.PythonAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.rust.RustAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.scala.ScalaAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.clojure.ClojureAnalyzerFactory;
+import org.opensolaris.opengrok.analysis.dtrace.DTraceAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.json.JsonAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.kotlin.KotlinAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.sh.ShAnalyzerFactory;
@@ -201,7 +202,8 @@ public class AnalyzerGuru {
             new HaskellAnalyzerFactory(),
             new GolangAnalyzerFactory(),
             new LuaAnalyzerFactory(),
-            new PascalAnalyzerFactory()
+            new PascalAnalyzerFactory(),
+            new DTraceAnalyzerFactory()
         };
 
         for (FileAnalyzerFactory analyzer : analyzers) {
