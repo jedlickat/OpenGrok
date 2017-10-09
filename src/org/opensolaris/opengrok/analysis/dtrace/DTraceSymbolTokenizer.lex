@@ -34,15 +34,19 @@ super(in);
 %init}
 %type boolean
 %eofval{
+this.finalOffset=zzEndRead; 
 return false;
 %eofval}
 %char
 
 Identifier = [a-zA-Z_] [a-zA-Z0-9_]*
 
+%state STRING COMMENT
+
 %%
 
 <YYINITIAL> {
+
 {Identifier} {
         String id = yytext();
         if (!Consts.kwd.contains(id)) {
@@ -50,5 +54,22 @@ Identifier = [a-zA-Z_] [a-zA-Z0-9_]*
             return true;
         }
 }
-<<EOF>>         { this.finalOffset=zzEndRead; return false; }
+
+\"      { yybegin(STRING); }
+"/*"    { yybegin(COMMENT); }
+
+}
+
+<STRING> {
+\"      { yybegin(YYINITIAL); }
+\\\\ | \\\"    {}
+}
+
+<COMMENT> {
+"*/"    { yybegin(YYINITIAL); }
+}
+
+<YYINITIAL, STRING, COMMENT> {
+<<EOF>>     { this.finalOffset=zzEndRead; return false; }
+[^]         {}
 }

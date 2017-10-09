@@ -49,7 +49,7 @@ WhiteSpace = [ \t\f]+
 EOL = \r|\n|\r\n
 Identifier = [a-zA-Z_] [a-zA-Z0-9_]+
 
-Number = ([0-9]+ | 0[xX][0-9a-fA-F]+)
+Number = (0[xX][0-9a-fA-F]+|[0-9]+\.[0-9]+|[0-9][0-9]*)(([eE][+-]?[0-9]+)?[ufdlUFDL]*)?
 
 URIChar = [\?\+\%\&\:\/\.\@\_\;\=\$\,\-\!\~\*\\]
 FNameChar = [a-zA-Z0-9_\-\.]
@@ -61,6 +61,11 @@ Path = "/"? [a-zA-Z]{FNameChar}* ("/" [a-zA-Z]{FNameChar}*[a-zA-Z0-9])+
 %%
 
 <YYINITIAL> {
+
+\{      { incScope(); writeUnicodeChar(yycharat(0)); }
+\}      { decScope(); writeUnicodeChar(yycharat(0)); }
+\;      { endScope(); writeUnicodeChar(yycharat(0)); }
+
 {Identifier} {
     String id = yytext();
     writeSymbol(id, Consts.kwd, yyline);
@@ -96,13 +101,13 @@ Path = "/"? [a-zA-Z]{FNameChar}* ("/" [a-zA-Z]{FNameChar}*[a-zA-Z0-9])+
 }
 
 <YYINITIAL, STRING, COMMENT> {
-"&"             { out.write("&amp;"); }
-"<"             { out.write("&lt;"); }
-">"             { out.write("&gt;"); }
-{EOL}           { startNewLine(); }
-{WhiteSpace}    { out.write(yytext()); }
-[!-~]           { out.write(yytext()); }
-[^\n]           { writeUnicodeChar(yycharat(0)); }
+"&"                 { out.write("&amp;"); }
+"<"                 { out.write("&lt;"); }
+">"                 { out.write("&gt;"); }
+{WhiteSpace}*{EOL}  { startNewLine(); }
+{WhiteSpace}        { out.write(yytext()); }
+[!-~]               { out.write(yycharat(0)); }
+[^\n]               { writeUnicodeChar(yycharat(0)); }
 }
 
 <STRING, COMMENT> {

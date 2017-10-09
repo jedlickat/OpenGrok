@@ -34,18 +34,14 @@ import org.opensolaris.opengrok.history.Annotation;
 
 public class DTraceAnalyzerFactory extends FileAnalyzerFactory {
     
-    private static final String NAME = "DTrace";
+    private static final String name = "DTrace";
     
     private static final String[] SUFFIXES = {
         "D",
     };
     
-    private static final String[] MAGICS = {
-        "#!/usr/sbin/dtrace",
-    };
-    
     public DTraceAnalyzerFactory() {
-        super(null, null, SUFFIXES, MAGICS, null, "text/plain", Genre.PLAIN, NAME);
+        super(null, null, SUFFIXES, null, null, "text/plain", Genre.PLAIN, name);
     }
     
     @Override

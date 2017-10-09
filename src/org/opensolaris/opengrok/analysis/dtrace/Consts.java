@@ -160,5 +160,11 @@ public class Consts {
         kwd.add("walltimestmap");
         kwd.add("zonename");
         kwd.add("zoneid");
+        
+        /* types */
+        kwd.add("string");
+        
+        /* translators */
+        kwd.add("translator");
     }
 }

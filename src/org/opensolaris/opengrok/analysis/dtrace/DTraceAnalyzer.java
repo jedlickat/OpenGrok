@@ -50,7 +50,11 @@ public class DTraceAnalyzer extends AbstractSourceCodeAnalyzer {
         return new DTraceXref(reader);
     }
     
-    // TODO: Add scopes support
+    @Override
+    protected boolean supportsScopes() {
+        return true;
+    }
+
     static void writeXref(Reader in, Writer out, Definitions defs, Annotation annotation, Project project) throws IOException {
         DTraceXref xref = new DTraceXref(in);
         AbstractSourceCodeAnalyzer.writeXref(xref, in, out, defs, annotation, project);
