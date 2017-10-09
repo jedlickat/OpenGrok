@@ -23,6 +23,9 @@
 
 package org.opensolaris.opengrok.analysis.dtrace;
 import org.opensolaris.opengrok.analysis.JFlexXref;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.opensolaris.opengrok.web.Util;
 
 %%
 %public
@@ -48,13 +51,32 @@ Identifier = [a-zA-Z_] [a-zA-Z0-9_]+
 
 Number = ([0-9]+ | 0[xX][0-9a-fA-F]+)
 
+URIChar = [\?\+\%\&\:\/\.\@\_\;\=\$\,\-\!\~\*\\]
+FNameChar = [a-zA-Z0-9_\-\.]
+File = [a-zA-Z]{FNameChar}* "." ([dh]|"hpp")
+Path = "/"? [a-zA-Z]{FNameChar}* ("/" [a-zA-Z]{FNameChar}*[a-zA-Z0-9])+
+
 %state  STRING COMMENT
+
 %%
 
 <YYINITIAL> {
 {Identifier} {
     String id = yytext();
     writeSymbol(id, Consts.kwd, yyline);
+}
+
+"#" {WhiteSpace}* "include" {WhiteSpace}* "<" ({File}|{Path}|{Identifier}) ">" {
+    Matcher match = Pattern.compile("(#.*)(include)(.*)<(.*)>").matcher(yytext());
+    if (match.matches()) {
+        out.write(match.group(1));
+        writeSymbol(match.group(2), Consts.kwd, yyline);
+        out.write(match.group(3));
+        out.write("&lt;");
+        String path = match.group(4);
+        out.write(Util.breadcrumbPath(urlPrefix + "path=", path));
+        out.write("&gt;");
+    }
 }
 
 {Number}    { out.write("<span class=\"n\">"); out.write(yytext()); out.write("</span>"); }
@@ -73,5 +95,34 @@ Number = ([0-9]+ | 0[xX][0-9a-fA-F]+)
 "*/"    { out.write(yytext()); yypop(); }
 }
 
-{EOL}       { startNewLine(); }
-[^\n]       { writeUnicodeChar(yycharat(0)); }
+<YYINITIAL, STRING, COMMENT> {
+"&"             { out.write("&amp;"); }
+"<"             { out.write("&lt;"); }
+">"             { out.write("&gt;"); }
+{EOL}           { startNewLine(); }
+{WhiteSpace}    { out.write(yytext()); }
+[!-~]           { out.write(yytext()); }
+[^\n]           { writeUnicodeChar(yycharat(0)); }
+}
+
+<STRING, COMMENT> {
+{Path} { out.write(Util.breadcrumbPath(urlPrefix + "path=", yytext(), '/')); }
+
+{File} {
+    String path = yytext();
+    out.write("<a href=\"" + urlPrefix + "path=");
+    out.write(path);
+    appendProject();
+    out.write("\">");
+    out.write(path);
+    out.write("</a>");
+}
+
+("http" | "https" | "ftp") "://" ({FNameChar}|{URIChar})+[a-zA-Z0-9/] {
+    appendLink(yytext());
+}
+
+{FNameChar}+ "@" {FNameChar}+ "." {FNameChar}+ {
+    writeEMailAddress(yytext());
+}
+}

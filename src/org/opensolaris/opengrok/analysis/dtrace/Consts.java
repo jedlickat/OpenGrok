@@ -30,6 +30,9 @@ public class Consts {
     public static final Set<String> kwd = new HashSet<String>();
     
     static {
+        /* D is a superset of ANSI C */
+        kwd.addAll(org.opensolaris.opengrok.analysis.c.Consts.kwd);
+        
         /* variable classes */
         kwd.add("self");
         kwd.add("this");
